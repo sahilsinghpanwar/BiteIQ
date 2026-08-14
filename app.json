@@ -22,7 +22,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "expo": {
+        "name": "CalorieLens",
+        "slug": "calorielens",
+        "web": {
+          "bundler": "metro"
+        }
+      }
     },
     "plugins": [
       "expo-router",
