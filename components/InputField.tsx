@@ -63,8 +63,9 @@ export default function InputField({
 
         {/* Input */}
         <TextInput
-          className="flex-1 ml-3"
           style={{
+            flex: 1,
+            marginLeft: 12,
             color: Colors.text.primary,
             fontSize: Fonts.size.base,
             fontWeight: Fonts.weight.regular,
@@ -77,6 +78,8 @@ export default function InputField({
           keyboardType={keyboardType}
           autoCapitalize="none"
           autoCorrect={false}
+          importantForAutofill="no"
+          textContentType="none"
           onSubmitEditing={onSubmitEditing}
           accessibilityLabel={label}
         />

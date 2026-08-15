@@ -3,14 +3,13 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
 
 import InputField from "@/components/InputField";
@@ -116,7 +115,7 @@ export default function LoginScreen() {
         style={{
           backgroundColor: Colors.background,
         }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="padding"
       >
         <StatusBar style="light" />
 
