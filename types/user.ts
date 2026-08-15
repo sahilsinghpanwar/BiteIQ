@@ -3,7 +3,7 @@
 export type GoalType =
   "weight_loss" | "muscle_gain" | "maintain" | "diabetic" | "athlete";
 
-//  user profile
+// user profile
 
 export interface UserProfile {
   id: string;
@@ -12,8 +12,21 @@ export interface UserProfile {
   weight: number;
   height: number;
   goal: GoalType;
-  daily_calorie_intake: number;
+  daily_calorie_target: number;
   created_at: Date;
+}
+
+// Profile — DB-matching type (nullable fields, string timestamp)
+// Single source of truth used across store and components
+export interface Profile {
+  id: string;
+  name: string | null;
+  age: number | null;
+  weight: number | null;
+  height: number | null;
+  goal: GoalType;
+  daily_calorie_target: number;
+  created_at?: string;
 }
 
 // The ID will be optional when updating the profile.

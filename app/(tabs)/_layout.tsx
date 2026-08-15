@@ -1,12 +1,10 @@
-import { Text, View } from "react-native";
+// app/(tabs)/_layout.tsx
+import { Tabs } from "expo-router";
 
-export default function HomeScreen() {
+export default function TabsLayout() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-2xl font-bold text-green-500">
-        🎉 NativeWind is working!
-      </Text>
-      <Text className="text-gray-500 mt-2">CalorieLens setup complete</Text>
-    </View>
+    <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name="index" options={{ title: "Home" }} />
+    </Tabs>
   );
 }
