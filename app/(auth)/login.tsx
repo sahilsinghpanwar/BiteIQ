@@ -57,11 +57,6 @@ export default function LoginScreen() {
       return false;
     }
 
-    if (password.length < 6) {
-      setValidationError("Password must be at least 6 characters.");
-      return false;
-    }
-
     return true;
   };
 

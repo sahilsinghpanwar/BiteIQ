@@ -78,6 +78,7 @@ export default function InputField({
           autoCapitalize="none"
           autoCorrect={false}
           onSubmitEditing={onSubmitEditing}
+          accessibilityLabel={label}
         />
 
         {/* Right Icon - Eye etc. */}
@@ -90,6 +91,10 @@ export default function InputField({
               left: 10,
               right: 10,
             }}
+            accessibilityRole="button"
+            accessibilityLabel={
+              secureTextEntry ? "Show password" : "Hide password"
+            }
           >
             <Ionicons
               name={rightIcon}
