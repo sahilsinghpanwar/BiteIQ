@@ -12,7 +12,7 @@ export interface UserProfile {
   weight: number;
   height: number;
   goal: GoalType;
-  daily_calorie_intake: number;
+  daily_calorie_target: number;
   created_at: Date;
 }
 
