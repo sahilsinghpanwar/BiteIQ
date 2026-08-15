@@ -1,8 +1,10 @@
+// Camera + Gallery screen UI
 import { Text, View } from "react-native";
-export default function HomeScreen() {
+
+export default function ScanScreen() {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text className="text-green-300">Home Screen</Text>
+      <Text>Scan Screen — coming soon</Text>
     </View>
   );
 }

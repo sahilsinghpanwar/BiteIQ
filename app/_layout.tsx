@@ -32,7 +32,7 @@ export default function RootLayout() {
       // Logged out hai lekin protected screen pe hai → login pe bhejo
       router.replace("/(auth)/login");
     }
-  }, [isInitialized, session, segments]);
+  }, [isInitialized, session]);
 
   // Auth check hone tak loading dikhao
   if (!isInitialized) {

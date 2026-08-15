@@ -16,6 +16,7 @@ export const useAuth = () => {
     isInitialized,
     signOut: storeSignOut,
     fetchProfile,
+    setSession,
   } = useAuthStore();
 
   // Sign In
@@ -70,6 +71,11 @@ export const useAuth = () => {
       if (signUpError) {
         setError(signUpError.message);
         return { success: false, error: signUpError.message };
+      }
+
+      // Store mein session set karo taaki layout redirect sahi se ho
+      if (data.session) {
+        setSession(data.session);
       }
 
       // Fix: signup ke baad bhi profile fetch karo
