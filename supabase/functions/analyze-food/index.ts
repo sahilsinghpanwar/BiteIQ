@@ -134,11 +134,20 @@ serve(async (req: Request): Promise<Response> => {
       },
     };
 
-    const geminiRes = await fetch(GEMINI_API_URL + "?key=" + GEMINI_KEY, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(geminiPayload),
-    });
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), 25_000);
+
+    let geminiRes: Response;
+    try {
+      geminiRes = await fetch(GEMINI_API_URL + "?key=" + GEMINI_KEY, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(geminiPayload),
+        signal: abortController.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
@@ -166,11 +175,19 @@ serve(async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unexpected error.";
+    const isTimeout = err instanceof Error && err.name === "AbortError";
+    const message = isTimeout
+      ? "Gemini request timed out. Please try again."
+      : err instanceof Error
+        ? err.message
+        : "Unexpected error.";
     console.error("analyze-food error:", message);
     return new Response(
       JSON.stringify({ error: message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: isTimeout ? 504 : 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });
