@@ -98,7 +98,7 @@ const DailySummary = ({ dailyLog, calorieTarget }: DailySummaryProps) => {
                 fontWeight: Fonts.weight.regular,
               }}
             >
-              / {calorieTarget} kcal
+              / {calorieTarget}
             </Text>
           </View>
         </View>
