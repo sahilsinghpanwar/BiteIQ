@@ -1,10 +1,10 @@
 // Image ko Supabase Storage mein upload karna
 import { supabase } from "@/services/supabase";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 // Type
 interface UploadImageResponse {
-  imageUrl: string | null;
+  storagePath: string | null;
   error: string | null;
 }
 
@@ -76,19 +76,15 @@ export async function uploadFoodImage(
 
     if (uploadError) throw uploadError;
 
-    // 5. Public URL lo
-    const { data: urlData } = supabase.storage
-      .from(bucketName)
-      .getPublicUrl(uploadData.path);
-
+    // 5. Return the storage path — callers generate a signed URL as needed.
     return {
-      imageUrl: urlData.publicUrl,
+      storagePath: uploadData.path,
       error: null,
     };
   } catch (err: any) {
     console.error("uploadFoodImage error:", err);
     return {
-      imageUrl: null,
+      storagePath: null,
       error: err.message || "Image upload fail ho gayi. Dobara koshish karo.",
     };
   }

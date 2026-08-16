@@ -6,7 +6,7 @@ import { supabase } from "@/services/supabase"; // Fix 1: correct import path
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -25,10 +25,13 @@ export default function ResultScreen() {
 
   const params = useLocalSearchParams<{
     analysis?: string;
-    imageUrl?: string;
+    storagePath?: string;
   }>();
 
   const [isSaving, setIsSaving] = useState(false);
+  const [signedImageUrl, setSignedImageUrl] = useState<string | null>(null);
+
+  const storagePath = params.storagePath ?? "";
 
   // Parse AI Data
 
@@ -36,7 +39,16 @@ export default function ResultScreen() {
     ? JSON.parse(params.analysis)
     : null;
 
-  const imageUrl = params.imageUrl || "";
+  // Generate a short-lived signed URL so the bucket stays private.
+  useEffect(() => {
+    if (!storagePath) return;
+    supabase.storage
+      .from("food-images")
+      .createSignedUrl(storagePath, 3600) // 1 hour
+      .then(({ data }) => {
+        if (data?.signedUrl) setSignedImageUrl(data.signedUrl);
+      });
+  }, [storagePath]);
 
   // Empty State
 
@@ -93,14 +105,14 @@ export default function ResultScreen() {
 
       const { error } = await supabase.from("meals").insert({
         user_id: user.id,
-        food_name: nutritionData.portionSize,
+        food_name: nutritionData.foodName,
         calories: nutritionData.calories,
         protein: nutritionData.macros.protein,
         carbs: nutritionData.macros.carbs,
         fat: nutritionData.macros.fat,
         best_for: nutritionData.bestFor,
         avoid_if: nutritionData.avoidIf,
-        image_url: imageUrl,
+        image_url: storagePath,
         eaten_at: new Date().toISOString(),
       });
 
@@ -128,9 +140,9 @@ export default function ResultScreen() {
       >
         {/* ── Food Image Banner ── */}
         <View className="relative w-full" style={{ height: 260 }}>
-          {imageUrl ? (
+          {signedImageUrl ? (
             <Image
-              source={{ uri: imageUrl }}
+              source={{ uri: signedImageUrl! }}
               className="w-full h-full"
               resizeMode="cover"
             />
@@ -174,7 +186,7 @@ export default function ResultScreen() {
                   fontWeight: Fonts.weight.bold,
                 }}
               >
-                {nutritionData.portionSize || "Unknown Food"}
+                {nutritionData.foodName || "Unknown Food"}
               </Text>
               <Text
                 className="mt-1"

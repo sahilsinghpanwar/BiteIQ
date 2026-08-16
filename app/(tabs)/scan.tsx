@@ -37,7 +37,7 @@ export default function ScanScreen() {
 
   const processImage = useCallback(
     async (uri: string) => {
-      const { data, imageUrl, error } = await analyzeImage(uri);
+      const { data, storagePath, error } = await analyzeImage(uri);
 
       if (error || !data) {
         Alert.alert(
@@ -51,8 +51,9 @@ export default function ScanScreen() {
       router.push({
         pathname: "../result/[id]",
         params: {
+          id: Date.now().toString(),
           analysis: JSON.stringify(data),
-          imageUrl: imageUrl ?? "",
+          storagePath: storagePath ?? "",
         },
       });
     },
@@ -180,6 +181,28 @@ export default function ScanScreen() {
             }}
           >
             Grant Permission
+          </Text>
+        </TouchableOpacity>
+
+        {/* Gallery fallback */}
+        <TouchableOpacity
+          className="items-center justify-center rounded-2xl px-8 mt-3"
+          style={{
+            height: 52,
+            borderWidth: 1,
+            borderColor: Colors.borderFocus,
+          }}
+          onPress={handleGallery}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={{
+              color: Colors.text.primary,
+              fontSize: Fonts.size.base,
+              fontWeight: Fonts.weight.semibold,
+            }}
+          >
+            Choose from Gallery
           </Text>
         </TouchableOpacity>
       </View>

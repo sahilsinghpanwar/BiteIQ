@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { analyzeFoodImage, FoodNutritionResult } from "@/services/geminiVision";
 import { uploadFoodImage } from "@/services/uploadImage";
+import * as FileSystem from "expo-file-system/legacy";
 import { useState } from "react";
 
 // Types
@@ -14,7 +15,7 @@ export interface AnalysisState {
 
 export interface AnalysisResult {
   data: FoodNutritionResult | null;
-  imageUrl: string | null;
+  storagePath: string | null;
   error: string | null;
 }
 
@@ -55,13 +56,13 @@ export function useFoodAnalysis() {
     if (!imageUri) {
       const error = "No image selected for analysis.";
       setAnalysisState((prev) => ({ ...prev, error }));
-      return { data: null, imageUrl: null, error };
+      return { data: null, storagePath: null, error };
     }
 
     if (!user?.id) {
       const error = "User session not found. Please log in again.";
       setAnalysisState((prev) => ({ ...prev, error }));
-      return { data: null, imageUrl: null, error };
+      return { data: null, storagePath: null, error };
     }
 
     try {
@@ -73,12 +74,12 @@ export function useFoodAnalysis() {
         data: null,
       });
 
-      const { imageUrl, error: uploadError } = await uploadFoodImage(
+      const { storagePath, error: uploadError } = await uploadFoodImage(
         imageUri,
         user.id,
       );
 
-      if (uploadError || !imageUrl) {
+      if (uploadError || !storagePath) {
         throw new Error(uploadError ?? "Failed to upload image.");
       }
 
@@ -88,7 +89,21 @@ export function useFoodAnalysis() {
         statusMessage: "Analyzing nutritional breakdown...",
       }));
 
-      const aiResult = await analyzeFoodImage(imageUri);
+      // Read the local file as Base64 so Gemini receives inline image bytes
+      // instead of an unresolvable file:// URI.
+      const ext = imageUri.split(".").pop()?.toLowerCase() ?? "";
+      const mimeType =
+        ext === "png"
+          ? "image/png"
+          : ext === "webp"
+            ? "image/webp"
+            : "image/jpeg"; // covers .jpg, .jpeg, .heic, and unknown
+
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const aiResult = await analyzeFoodImage(base64, mimeType);
 
       if (!aiResult) {
         throw new Error("Unable to analyze food image. Please try again.");
@@ -102,7 +117,7 @@ export function useFoodAnalysis() {
         data: aiResult,
       });
 
-      return { data: aiResult, imageUrl, error: null };
+      return { data: aiResult, storagePath, error: null };
     } catch (err: any) {
       const error = err.message ?? "Something went wrong during analysis.";
 
@@ -113,7 +128,7 @@ export function useFoodAnalysis() {
         data: null,
       });
 
-      return { data: null, imageUrl: null, error };
+      return { data: null, storagePath: null, error };
     }
   };
 
