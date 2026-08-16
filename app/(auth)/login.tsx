@@ -3,19 +3,19 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
-import InputField from "@/components/InputField";
+import InputField from "@/components/ui/InputField";
 import { useAuth } from "@/hooks/useAuth";
-import { Colors } from "../../constants/colors";
-import { Fonts } from "../../constants/fonts";
+import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 
 // Email Validator
 
@@ -206,6 +206,9 @@ export default function LoginScreen() {
               onChangeText={handleEmailChange}
               icon="mail-outline"
               keyboardType="email-address"
+              autoComplete="email"
+              importantForAutofill="yes"
+              textContentType="emailAddress"
               onSubmitEditing={() => Keyboard.dismiss()}
             />
 
@@ -218,6 +221,9 @@ export default function LoginScreen() {
               onChangeText={handlePasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showPassword}
+              autoComplete="current-password"
+              importantForAutofill="yes"
+              textContentType="password"
               rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
               onRightIconPress={() => setShowPassword((previous) => !previous)}
               onSubmitEditing={handleLogin}

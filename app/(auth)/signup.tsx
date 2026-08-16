@@ -3,19 +3,19 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
-import InputField from "@/components/InputField";
+import InputField from "@/components/ui/InputField";
 import { useAuth } from "@/hooks/useAuth";
-import { Colors } from "../../constants/colors";
-import { Fonts } from "../../constants/fonts";
+import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 
 // Email Validator
 const isValidEmail = (email: string) => {
@@ -240,6 +240,10 @@ export default function SignupScreen() {
               value={name}
               onChangeText={handleNameChange}
               icon="person-outline"
+              autoCapitalize="words"
+              autoComplete="name"
+              importantForAutofill="yes"
+              textContentType="name"
             />
 
             {/* EMAIL */}
@@ -251,6 +255,9 @@ export default function SignupScreen() {
               onChangeText={handleEmailChange}
               icon="mail-outline"
               keyboardType="email-address"
+              autoComplete="email"
+              importantForAutofill="yes"
+              textContentType="emailAddress"
             />
 
             {/* PASSWORD */}
@@ -262,6 +269,9 @@ export default function SignupScreen() {
               onChangeText={handlePasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showPassword}
+              autoComplete="new-password"
+              importantForAutofill="yes"
+              textContentType="newPassword"
               rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
               onRightIconPress={() => setShowPassword((previous) => !previous)}
             />
@@ -275,6 +285,9 @@ export default function SignupScreen() {
               onChangeText={handleConfirmPasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showConfirmPassword}
+              autoComplete="new-password"
+              importantForAutofill="yes"
+              textContentType="newPassword"
               rightIcon={
                 showConfirmPassword ? "eye-off-outline" : "eye-outline"
               }

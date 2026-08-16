@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { Fonts } from "../constants/fonts";
+import { Colors } from "../constants/Colors";
+import { Fonts } from "../constants/Fonts";
 
 // Props jo InputField ko bahar se milengi
 type InputFieldProps = {

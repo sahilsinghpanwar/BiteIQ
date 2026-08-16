@@ -1,5 +1,5 @@
-import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/fonts";
+import { Colors } from "@/constants/Colors";
+import { Fonts } from "@/constants/Fonts";
 import { useAuth } from "@/hooks/useAuth";
 import { FoodNutritionResult } from "@/services/geminiVision";
 import { supabase } from "@/services/supabase"; // Fix 1: correct import path
@@ -8,13 +8,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 // Result Screen

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import "../global.css";
 
-import { Colors } from "@/constants/colors";
+import { Colors } from "@/constants/Colors";
 import { useAuthStore } from "@/store/authStore";
 
 export default function RootLayout() {
