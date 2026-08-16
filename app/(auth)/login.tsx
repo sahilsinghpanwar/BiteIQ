@@ -206,6 +206,9 @@ export default function LoginScreen() {
               onChangeText={handleEmailChange}
               icon="mail-outline"
               keyboardType="email-address"
+              autoComplete="email"
+              importantForAutofill="yes"
+              textContentType="emailAddress"
               onSubmitEditing={() => Keyboard.dismiss()}
             />
 
@@ -218,6 +221,9 @@ export default function LoginScreen() {
               onChangeText={handlePasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showPassword}
+              autoComplete="current-password"
+              importantForAutofill="yes"
+              textContentType="password"
               rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
               onRightIconPress={() => setShowPassword((previous) => !previous)}
               onSubmitEditing={handleLogin}

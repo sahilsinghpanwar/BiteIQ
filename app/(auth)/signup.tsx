@@ -240,6 +240,10 @@ export default function SignupScreen() {
               value={name}
               onChangeText={handleNameChange}
               icon="person-outline"
+              autoCapitalize="words"
+              autoComplete="name"
+              importantForAutofill="yes"
+              textContentType="name"
             />
 
             {/* EMAIL */}
@@ -251,6 +255,9 @@ export default function SignupScreen() {
               onChangeText={handleEmailChange}
               icon="mail-outline"
               keyboardType="email-address"
+              autoComplete="email"
+              importantForAutofill="yes"
+              textContentType="emailAddress"
             />
 
             {/* PASSWORD */}
@@ -262,6 +269,9 @@ export default function SignupScreen() {
               onChangeText={handlePasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showPassword}
+              autoComplete="new-password"
+              importantForAutofill="yes"
+              textContentType="newPassword"
               rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
               onRightIconPress={() => setShowPassword((previous) => !previous)}
             />
@@ -275,6 +285,9 @@ export default function SignupScreen() {
               onChangeText={handleConfirmPasswordChange}
               icon="lock-closed-outline"
               secureTextEntry={!showConfirmPassword}
+              autoComplete="new-password"
+              importantForAutofill="yes"
+              textContentType="newPassword"
               rightIcon={
                 showConfirmPassword ? "eye-off-outline" : "eye-outline"
               }

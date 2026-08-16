@@ -24,6 +24,10 @@ export interface InputFieldProps {
   icon: keyof typeof Ionicons.glyphMap;
   secureTextEntry?: boolean;
   keyboardType?: KeyboardTypeOptions;
+  autoCapitalize?: React.ComponentProps<typeof TextInput>["autoCapitalize"];
+  autoComplete?: React.ComponentProps<typeof TextInput>["autoComplete"];
+  importantForAutofill?: React.ComponentProps<typeof TextInput>["importantForAutofill"];
+  textContentType?: React.ComponentProps<typeof TextInput>["textContentType"];
   rightIcon?: keyof typeof Ionicons.glyphMap;
   onRightIconPress?: () => void;
   onSubmitEditing?: () => void;
@@ -42,6 +46,10 @@ function InputField({
   icon,
   secureTextEntry = false,
   keyboardType = "default",
+  autoCapitalize = "none",
+  autoComplete = "off",
+  importantForAutofill = "auto",
+  textContentType = "none",
   rightIcon,
   onRightIconPress,
   onSubmitEditing,
@@ -68,10 +76,11 @@ function InputField({
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
-          autoCapitalize="none"
+          autoCapitalize={autoCapitalize}
           autoCorrect={false}
-          importantForAutofill="no"
-          textContentType="none"
+          autoComplete={autoComplete}
+          importantForAutofill={importantForAutofill}
+          textContentType={textContentType}
           editable={editable}
           onSubmitEditing={onSubmitEditing}
           accessibilityLabel={label}

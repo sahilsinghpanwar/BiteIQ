@@ -2,6 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { Fonts } from "@/constants/Fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
 import {
   ColorValue,
@@ -69,6 +70,7 @@ const scanLabelStyle: TextStyle = {
 // Layout
 
 export default function TabsLayout() {
+  const { bottom: bottomInset } = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
@@ -79,9 +81,9 @@ export default function TabsLayout() {
           backgroundColor: Colors.background,
           borderTopColor: Colors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
-          height: Platform.OS === "ios" ? 80 : 68,
+          height: Platform.OS === "ios" ? 52 + bottomInset : 68,
           paddingTop: 8,
-          paddingBottom: Platform.OS === "ios" ? 20 : 10,
+          paddingBottom: Platform.OS === "ios" ? bottomInset : 10,
           elevation: 8,
           shadowColor: "#000",
           shadowOpacity: 0.06,

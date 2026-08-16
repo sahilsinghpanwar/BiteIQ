@@ -55,8 +55,8 @@ function Loader({
   // Full-screen backdrop (modal / blocking action)
   if (variant === "overlay") {
     return (
-      <View style={[styles.overlayContainer, style]}>
-        <ActivityIndicator size="large" color={color} />
+      <View style={[styles.overlayContainer, { gap }, style]}>
+        <ActivityIndicator size={indicatorSizes[size]} color={color} />
         {message ? (
           <Text style={[styles.overlayText, { fontSize }, messageStyle]}>
             {message}
@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 999,
-    gap: 14,
     paddingHorizontal: 24,
   },
   overlayText: {
