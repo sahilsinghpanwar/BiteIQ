@@ -3,19 +3,19 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
-import InputField from "@/components/InputField";
+import InputField from "@/components/ui/InputField";
 import { useAuth } from "@/hooks/useAuth";
-import { Colors } from "../../constants/colors";
-import { Fonts } from "../../constants/fonts";
+import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 
 // Email Validator
 const isValidEmail = (email: string) => {

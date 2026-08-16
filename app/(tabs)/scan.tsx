@@ -1,5 +1,5 @@
-import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/fonts";
+import { Colors } from "@/constants/Colors";
+import { Fonts } from "@/constants/Fonts";
 import { useFoodAnalysis } from "@/hooks/useFoodAnalysis";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -8,13 +8,13 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 // Types
