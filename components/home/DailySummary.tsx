@@ -59,20 +59,22 @@ export default function DailySummary({
   calorieTarget = 2000,
 }: DailySummaryProps) {
   // Calculations with safe fallbacks
-  const { consumed, remaining, progress, progressPercent } = useMemo(() => {
-    const consumedVal = Math.round(dailyLog?.total_calories ?? 0);
-    const targetVal = Math.max(calorieTarget, 1);
-    const remVal = Math.max(targetVal - consumedVal, 0);
-    const progVal = Math.min(Math.max(consumedVal / targetVal, 0), 1);
-    const progPercent: DimensionValue = `${Math.round(progVal * 100)}%`;
+  const { consumed, target, remaining, progress, progressPercent } =
+    useMemo(() => {
+      const consumedVal = Math.round(dailyLog?.total_calories ?? 0);
+      const targetVal = Math.max(calorieTarget, 1);
+      const remVal = Math.max(targetVal - consumedVal, 0);
+      const progVal = Math.min(Math.max(consumedVal / targetVal, 0), 1);
+      const progPercent: DimensionValue = `${Math.round(progVal * 100)}%`;
 
-    return {
-      consumed: consumedVal,
-      remaining: remVal,
-      progress: progVal,
-      progressPercent: progPercent,
-    };
-  }, [dailyLog?.total_calories, calorieTarget]);
+      return {
+        consumed: consumedVal,
+        target: targetVal,
+        remaining: remVal,
+        progress: progVal,
+        progressPercent: progPercent,
+      };
+    }, [dailyLog?.total_calories, calorieTarget]);
 
   return (
     <View
@@ -114,7 +116,7 @@ export default function DailySummary({
                 fontWeight: Fonts.weight.regular,
               }}
             >
-              / {calorieTarget.toLocaleString()} kcal
+              / {target.toLocaleString()} kcal
             </Text>
           </View>
         </View>

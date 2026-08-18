@@ -1,3 +1,4 @@
+import ErrorState from "@/components/ui/ErrorState";
 import Loader from "@/components/ui/Loader";
 import { Colors } from "@/constants/Colors";
 import { Fonts } from "@/constants/Fonts";
@@ -168,6 +169,8 @@ function MealRow({
         onPress={handleDelete}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`Delete ${meal.food_name}`}
       >
         <Ionicons name="trash-outline" size={16} color={Colors.text.tertiary} />
       </TouchableOpacity>
@@ -177,29 +180,29 @@ function MealRow({
 
 // History Screen
 export default function HistoryScreen() {
-  const { meals, isLoading, fetchTodayMeals, deleteMeal } = useMeals();
+  const { allMeals, isLoading, error, fetchAllMeals, deleteMeal } = useMeals();
 
-  // For history we need all meals, not just today
-  const [allMeals, setAllMeals] = useState<Meal[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchTodayMeals();
-  }, []);
-
-  // Use today's meals for now — can extend to all meals later
-  useEffect(() => {
-    setAllMeals(meals);
-  }, [meals]);
+    fetchAllMeals();
+  }, [fetchAllMeals]);
 
   const onRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await fetchTodayMeals();
+    await fetchAllMeals();
     setIsRefreshing(false);
-  }, [fetchTodayMeals]);
+  }, [fetchAllMeals]);
+
+  const onRetry = useCallback(() => {
+    fetchAllMeals();
+  }, [fetchAllMeals]);
 
   const grouped = groupMealsByDate(allMeals);
-  const dateGroups = Object.keys(grouped);
+  // Newest day first, independent of the order the keys were inserted in
+  const dateGroups = Object.keys(grouped).sort(
+    (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+  );
 
   // Weekly bar chart data (last 7 days)
   const weeklyData = Array.from({ length: 7 }, (_, i) => {
@@ -332,8 +335,15 @@ export default function HistoryScreen() {
             </View>
           </View>
 
-          {/* ── Meal Groups ── */}
-          {allMeals.length === 0 ? (
+          {/* ── Fetch Error (takes priority over the empty state) ── */}
+          {error ? (
+            <ErrorState
+              title="Couldn't load your history"
+              message={error}
+              onRetry={onRetry}
+              style={{ marginBottom: 20 }}
+            />
+          ) : allMeals.length === 0 ? (
             <View
               className="rounded-2xl p-8 items-center justify-center"
               style={{
@@ -355,7 +365,10 @@ export default function HistoryScreen() {
                 No meals logged yet.{"\n"}Start by scanning your first meal!
               </Text>
             </View>
-          ) : (
+          ) : null}
+
+          {/* ── Meal Groups ── */}
+          {allMeals.length > 0 && (
             <View style={{ gap: 20 }}>
               {dateGroups.map((dateKey) => {
                 const dayMeals = grouped[dateKey];

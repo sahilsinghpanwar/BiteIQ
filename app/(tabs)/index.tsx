@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DailySummary from "@/components/home/DailySummary";
 import RecentMeals from "@/components/home/RecentMeals";
 import StreakCard from "@/components/home/StreakCard";
+import ErrorState from "@/components/ui/ErrorState";
 import { Colors } from "@/constants/Colors";
 import { Fonts } from "@/constants/Fonts";
 import { useMeals } from "@/hooks/useMeals";
@@ -33,8 +34,15 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { profile } = useAuthStore();
 
-  const { meals, dailyLog, streak, isLoading, fetchTodayMeals, fetchStreak } =
-    useMeals();
+  const {
+    meals,
+    dailyLog,
+    streak,
+    isLoading,
+    error,
+    fetchTodayMeals,
+    fetchStreak,
+  } = useMeals();
 
   // Refresh data on initial mount & whenever the user returns to this tab
   useFocusEffect(
@@ -48,6 +56,10 @@ export default function HomeScreen() {
   const onRefresh = useCallback(async () => {
     await Promise.all([fetchTodayMeals(), fetchStreak()]);
   }, [fetchTodayMeals, fetchStreak]);
+
+  const onRetry = useCallback(() => {
+    fetchTodayMeals();
+  }, [fetchTodayMeals]);
 
   // Memoized derived data
   const firstName = useMemo(
@@ -193,7 +205,18 @@ export default function HomeScreen() {
             )}
           </View>
 
-          <RecentMeals meals={meals} />
+          {error ? (
+            <ErrorState
+              title="Couldn't load today's meals"
+              message={error}
+              onRetry={onRetry}
+              style={{ marginBottom: 10 }}
+            />
+          ) : null}
+
+          {/* Already-loaded meals stay visible when a refresh fails; only the
+              "nothing logged yet" state is suppressed behind the error. */}
+          {(!error || meals.length > 0) && <RecentMeals meals={meals} />}
         </View>
       </ScrollView>
     </View>

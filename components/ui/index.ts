@@ -9,9 +9,11 @@ export type { ButtonProps, ButtonSize, ButtonVariant } from "./Button";
 export { default as Card } from "./Card";
 export type { CardProps, CardVariant } from "./Card";
 
+export { default as ErrorState } from "./ErrorState";
+export type { ErrorStateProps } from "./ErrorState";
+
 export { default as InputField } from "./InputField";
 export type { InputFieldProps } from "./InputField";
 
 export { default as Loader } from "./Loader";
 export type { LoaderProps, LoaderSize, LoaderVariant } from "./Loader";
-

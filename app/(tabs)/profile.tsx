@@ -26,6 +26,49 @@ interface EditableField {
   keyboardType?: "default" | "numeric";
 }
 
+// Measurement Validation
+
+type MeasurementKey = "age" | "weight" | "height";
+
+const MEASUREMENT_RANGES: Record<
+  MeasurementKey,
+  { label: string; unit: string; min: number; max: number }
+> = {
+  age: { label: "Age", unit: "years", min: 1, max: 120 },
+  weight: { label: "Weight", unit: "kg", min: 1, max: 500 },
+  height: { label: "Height", unit: "cm", min: 30, max: 300 },
+};
+
+interface ParsedMeasurement {
+  value: number | null;
+  error: string | null;
+}
+
+/**
+ * Blank (or whitespace-only) input clears the field; anything else must parse
+ * to a finite number inside the field's range. Never yields 0 for empty input.
+ */
+function parseMeasurement(key: MeasurementKey, raw: string): ParsedMeasurement {
+  const trimmed = raw.trim();
+  if (!trimmed) return { value: null, error: null };
+
+  const { label, unit, min, max } = MEASUREMENT_RANGES[key];
+  const parsed = Number(trimmed);
+
+  if (!Number.isFinite(parsed)) {
+    return { value: null, error: `${label} must be a valid number.` };
+  }
+
+  if (parsed < min || parsed > max) {
+    return {
+      value: null,
+      error: `${label} must be between ${min} and ${max} ${unit}.`,
+    };
+  }
+
+  return { value: parsed, error: null };
+}
+
 // Sub Components
 function StatItem({
   label,
@@ -83,6 +126,7 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isUpdatingGoal, setIsUpdatingGoal] = useState(false);
 
   // Local edit state
   const [editName, setEditName] = useState(profile?.name ?? "");
@@ -90,16 +134,45 @@ export default function ProfileScreen() {
   const [editWeight, setEditWeight] = useState(String(profile?.weight ?? ""));
   const [editHeight, setEditHeight] = useState(String(profile?.height ?? ""));
 
+  // The profile loads asynchronously, so the state initializers above can still
+  // be empty by the time the user acts. Re-read it whenever edit mode opens.
+  const syncEditFields = () => {
+    setEditName(profile?.name ?? "");
+    setEditAge(String(profile?.age ?? ""));
+    setEditWeight(String(profile?.weight ?? ""));
+    setEditHeight(String(profile?.height ?? ""));
+  };
+
+  // Enter Edit Mode
+
+  const handleEdit = () => {
+    syncEditFields();
+    setIsEditing(true);
+  };
+
   // Save Profile
 
   const handleSave = async () => {
+    const age = parseMeasurement("age", editAge);
+    const weight = parseMeasurement("weight", editWeight);
+    const height = parseMeasurement("height", editHeight);
+
+    const validationErrors = [age, weight, height]
+      .map((field) => field.error)
+      .filter((message): message is string => message !== null);
+
+    if (validationErrors.length > 0) {
+      Alert.alert("Invalid Details", validationErrors.join("\n"));
+      return;
+    }
+
     setIsSaving(true);
 
     const { success, error } = await updateProfile({
       name: editName.trim() || null,
-      age: editAge ? Number(editAge) : null,
-      weight: editWeight ? Number(editWeight) : null,
-      height: editHeight ? Number(editHeight) : null,
+      age: age.value,
+      weight: weight.value,
+      height: height.value,
     });
 
     setIsSaving(false);
@@ -114,28 +187,34 @@ export default function ProfileScreen() {
   // Cancel Edit
 
   const handleCancel = () => {
-    setEditName(profile?.name ?? "");
-    setEditAge(String(profile?.age ?? ""));
-    setEditWeight(String(profile?.weight ?? ""));
-    setEditHeight(String(profile?.height ?? ""));
+    syncEditFields();
     setIsEditing(false);
   };
 
   // Change Goal
 
   const handleGoalChange = async (goalType: GoalType) => {
+    // One goal update at a time — overlapping writes can settle out of order
+    // and leave the persisted goal disagreeing with the last tap.
+    if (isUpdatingGoal) return;
     if (goalType === profile?.goal) return;
 
     const preset = GOAL_PRESETS.find((g) => g.type === goalType);
     if (!preset) return;
 
-    const { success, error } = await updateProfile({
-      goal: goalType,
-      daily_calorie_target: preset.calorie_target,
-    });
+    setIsUpdatingGoal(true);
 
-    if (!success) {
-      Alert.alert("Error", error || "Failed to update goal.");
+    try {
+      const { success, error } = await updateProfile({
+        goal: goalType,
+        daily_calorie_target: preset.calorie_target,
+      });
+
+      if (!success) {
+        Alert.alert("Error", error || "Failed to update goal.");
+      }
+    } finally {
+      setIsUpdatingGoal(false);
     }
   };
 
@@ -149,8 +228,16 @@ export default function ProfileScreen() {
         style: "destructive",
         onPress: async () => {
           setIsSigningOut(true);
-          await signOut();
-          setIsSigningOut(false);
+
+          try {
+            const { success, error } = await signOut();
+
+            if (!success) {
+              Alert.alert("Error", error || "Failed to sign out.");
+            }
+          } finally {
+            setIsSigningOut(false);
+          }
         },
       },
     ]);
@@ -255,10 +342,7 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity
-              onPress={() => setIsEditing(true)}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={handleEdit} activeOpacity={0.7}>
               <Ionicons
                 name="pencil-outline"
                 size={20}
@@ -457,8 +541,10 @@ export default function ProfileScreen() {
                     borderWidth: 1,
                     borderColor: isActive ? Colors.borderFocus : Colors.border,
                     gap: 12,
+                    opacity: isUpdatingGoal ? 0.6 : 1,
                   }}
                   onPress={() => handleGoalChange(goal.type)}
+                  disabled={isUpdatingGoal}
                   activeOpacity={0.7}
                 >
                   <Text style={{ fontSize: 20 }}>{goal.emoji}</Text>
