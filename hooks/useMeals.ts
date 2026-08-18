@@ -90,15 +90,26 @@ export const useMeals = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
-        .from("meals")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("eaten_at", { ascending: false });
+      const pageSize = 1000;
+      const fetchedMeals: Meal[] = [];
 
-      if (fetchError) throw fetchError;
+      for (let from = 0; ; from += pageSize) {
+        const { data, error: fetchError } = await supabase
+          .from("meals")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("eaten_at", { ascending: false })
+          .range(from, from + pageSize - 1);
 
-      setAllMeals((data as Meal[]) ?? []);
+        if (fetchError) throw fetchError;
+
+        const page = (data as Meal[]) ?? [];
+        fetchedMeals.push(...page);
+
+        if (page.length < pageSize) break;
+      }
+
+      setAllMeals(fetchedMeals);
     } catch (err: any) {
       setError(err.message || "Failed to fetch meals");
     } finally {

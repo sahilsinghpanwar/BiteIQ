@@ -342,7 +342,12 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity onPress={handleEdit} activeOpacity={0.7}>
+            <TouchableOpacity
+              onPress={handleEdit}
+              activeOpacity={0.7}
+              accessibilityLabel="Edit profile"
+              accessibilityRole="button"
+            >
               <Ionicons
                 name="pencil-outline"
                 size={20}
