@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/sahilpanwar-dev/assets/main/calorielens-banner.png" alt="CalorieLens Logo" width="120" />
 
   <h1>🥗 BitelQ</h1>
   <h3>AI-Powered Calorie &amp; Nutrition Tracker</h3>
