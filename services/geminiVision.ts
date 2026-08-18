@@ -2,6 +2,7 @@
 // The API key is stored as a Supabase secret (GEMINI_KEY) and never
 // included in the mobile bundle.
 import { supabase } from "@/services/supabase";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -44,8 +45,23 @@ export const analyzeFoodImage = async (
   );
 
   if (error) {
-    console.error("analyze-food function error:", error);
-    throw new Error(error.message || "Food analysis failed. Please try again.");
+    let message = error.message;
+
+    if (error instanceof FunctionsHttpError) {
+      const body = (await error.context.json().catch(() => null)) as {
+        error?: unknown;
+        message?: unknown;
+      } | null;
+
+      if (typeof body?.error === "string") {
+        message = body.error;
+      } else if (typeof body?.message === "string") {
+        message = body.message;
+      }
+    }
+
+    console.error("analyze-food function error:", message);
+    throw new Error(message || "Food analysis failed. Please try again.");
   }
 
   if (!data) {

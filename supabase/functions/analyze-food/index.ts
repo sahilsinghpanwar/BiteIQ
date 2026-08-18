@@ -4,7 +4,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 
@@ -139,9 +139,12 @@ serve(async (req: Request): Promise<Response> => {
 
     let geminiRes: Response;
     try {
-      geminiRes = await fetch(GEMINI_API_URL + "?key=" + GEMINI_KEY, {
+      geminiRes = await fetch(GEMINI_API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_KEY,
+        },
         body: JSON.stringify(geminiPayload),
         signal: abortController.signal,
       });
