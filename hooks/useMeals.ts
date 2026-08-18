@@ -9,6 +9,7 @@ export const useMeals = () => {
   const { user } = useAuthStore();
 
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [allMeals, setAllMeals] = useState<Meal[]>([]);
   const [dailyLog, setDailyLog] = useState<DailyNutritionSummary | null>(null);
   const [streak, setStreak] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -81,7 +82,42 @@ export const useMeals = () => {
     }
   }, [user?.id]);
 
-  // 2. Fetch User Streak
+  // 2. Fetch All Meals (full history, newest first)
+  const fetchAllMeals = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const pageSize = 1000;
+      const fetchedMeals: Meal[] = [];
+
+      for (let from = 0; ; from += pageSize) {
+        const { data, error: fetchError } = await supabase
+          .from("meals")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("eaten_at", { ascending: false })
+          .range(from, from + pageSize - 1);
+
+        if (fetchError) throw fetchError;
+
+        const page = (data as Meal[]) ?? [];
+        fetchedMeals.push(...page);
+
+        if (page.length < pageSize) break;
+      }
+
+      setAllMeals(fetchedMeals);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch meals");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id]);
+
+  // 3. Fetch User Streak
   const fetchStreak = useCallback(async () => {
     if (!user?.id) return;
 
@@ -147,7 +183,7 @@ export const useMeals = () => {
     }
   }, [user?.id]);
 
-  // 3. Delete Meal
+  // 4. Delete Meal
   const deleteMeal = useCallback(
     async (mealId: string) => {
       if (!user?.id) return;
@@ -164,6 +200,9 @@ export const useMeals = () => {
 
         if (deleteError) throw deleteError;
 
+        // The row is gone server-side, so drop it locally instead of refetching
+        setAllMeals((prev) => prev.filter((m) => m.id !== mealId));
+
         await fetchTodayMeals();
       } catch (err: any) {
         setError(err.message || "Failed to delete meal");
@@ -176,11 +215,13 @@ export const useMeals = () => {
 
   return {
     meals,
+    allMeals,
     dailyLog,
     streak,
     isLoading,
     error,
     fetchTodayMeals,
+    fetchAllMeals,
     fetchStreak,
     deleteMeal,
   };
